@@ -47,11 +47,11 @@ public class Vf {
                 // Generate Public and Private Key for Voter Server
                 generateKeyPairs();
 
-                // Write Public Key to file named serverPubKey
+           /*     // Write Public Key to file named serverPubKey.der
                 byte[] key = pub.getEncoded();
-                FileOutputStream keyfos = new FileOutputStream("serverPubKey");
+                FileOutputStream keyfos = new FileOutputStream("serverPubKey.der");
                 keyfos.write(key);
-                keyfos.close();
+                keyfos.close();*/
 
                 // Buffered reader for socket input
                 BufferedReader br = 
@@ -64,10 +64,17 @@ public class Vf {
 
                 String message = decrypt(priv, line).toString();
                 
-                String[] tokens = line.split(":");
-                String username = tokens[0]; // Get username
-                String password = tokens[1]; // Get password
+                String[] tokens = message.split(":");
+                String name = tokens[0]; // Get username
+                String vNumber = tokens[1]; // Get password
+                String dSig = tokens[2]; // Get digital signature
 
+                System.out.println("Name: " + name);
+                System.out.println("vNumber: " + vNumber);
+                System.out.println("dSig: " + dSig);
+
+
+/*
                 // Open file with name "password.txt"
                 File file = new File("password.txt");
                 FileReader fr;
@@ -106,7 +113,7 @@ public class Vf {
                     } else {
                         out.println("Incorrect");
                     }
-                }
+                }*/
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -178,7 +185,7 @@ public class Vf {
 
         /* save the public key in a file */
         byte[] key = pub.getEncoded();
-        FileOutputStream keyfos = new FileOutputStream("pubKey1");
+        FileOutputStream keyfos = new FileOutputStream("serverPubKey.der");
         keyfos.write(key);
         keyfos.close();
     }
