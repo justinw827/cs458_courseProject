@@ -57,7 +57,7 @@ public class VoterCli {
 
             // Digitally sign the name
             // Digital Signature code found here: https://docs.oracle.com/javase/tutorial/security/apisign/step3.html
-            Signature dsa = Signature.getInstance("SHA1withDSA");
+            Signature dsa = Signature.getInstance("SHA1withRSA");
             dsa.initSign(priv);
 
             byte[] nameBuff = name.getBytes();
@@ -72,8 +72,10 @@ public class VoterCli {
             sigfos.close();
 
 			// Encrypt name, vNumber, and digital signature using server's public key into one message
-            PublicKey serverPubKey = readPublicKey("serverPubKey");
-            byte[] message = encrypt(serverPubKey, name+vNumber+realSig);
+            PublicKey serverPubKey = readPublicKey("serverPubKey.der");
+
+            String sMessage = name + ":" + vNumber + ":" + realSig.toString();
+            byte[] message = encrypt(serverPubKey, sMessage);
 
             // Send encrypted message
 	        out.println(message.toString());
