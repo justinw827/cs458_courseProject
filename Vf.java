@@ -11,7 +11,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.BadPaddingException;
 import java.security.spec.*;
-import java.nio.file.*;
 import java.security.*;
 import java.io.*;
 
@@ -47,6 +46,12 @@ public class Vf {
 
                 // Generate Public and Private Key for Voter Server
                 generateKeyPairs();
+
+                // Write Public Key to file named serverPubKey
+                byte[] key = pub.getEncoded();
+                FileOutputStream keyfos = new FileOutputStream("serverPubKey");
+                keyfos.write(key);
+                keyfos.close();
 
                 // Buffered reader for socket input
                 BufferedReader br = 
@@ -162,9 +167,9 @@ public class Vf {
     public void generateKeyPairs() throws NoSuchAlgorithmException, FileNotFoundException, IOException, NoSuchProviderException {
         // Generate Keys
         // Key pair code found here: https://docs.oracle.com/javase/tutorial/security/apisign/step2.html
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "SUN");
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 
-        SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
         keyGen.initialize(1024, random);
 
         KeyPair pair = keyGen.generateKeyPair();
