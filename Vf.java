@@ -44,6 +44,10 @@ public class Vf {
             // out.println("string") sends a string over the socket
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             try { 
+
+                // Generate Public and Private Key for Voter Server
+                generateKeyPairs();
+
                 // Buffered reader for socket input
                 BufferedReader br = 
                     new BufferedReader(
@@ -53,6 +57,7 @@ public class Vf {
 
                 // Decrypt line
 
+                String message = decrypt(priv, line).toString();
                 
                 String[] tokens = line.split(":");
                 String username = tokens[0]; // Get username
@@ -101,6 +106,24 @@ public class Vf {
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("Error while reading from socket.");
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                System.err.println("Error generating key pairs.");
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
+                System.err.println("Error writing digital signature.");
+            } catch (NoSuchProviderException e) {
+                e.printStackTrace();
+                System.err.println("Error writing digital signature.");
+            } catch (NoSuchPaddingException e) {
+                e.printStackTrace();
+                System.err.println("Error encrypting message.");
+            } catch (IllegalBlockSizeException e) {
+                e.printStackTrace();
+                System.err.println("Error encrypting message.");
+            } catch (BadPaddingException e) {
+                e.printStackTrace();
+                System.err.println("Error encrypting message.");
             }
 
             System.out.println("Closing connection");

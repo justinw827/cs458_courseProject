@@ -45,6 +45,7 @@ public class VoterCli {
 
 	    try {
 
+            // Generate Public and Private Key for Voter Client
             generateKeyPairs();
 
 	        // Get name
