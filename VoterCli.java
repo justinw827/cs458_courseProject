@@ -8,7 +8,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.BadPaddingException;
 import java.security.spec.*;
-import java.nio.file.*;
 
 public class VoterCli {
     // initialize socket and input output streams
@@ -58,7 +57,7 @@ public class VoterCli {
 
             // Digitally sign the name
             // Digital Signature code found here: https://docs.oracle.com/javase/tutorial/security/apisign/step3.html
-            Signature dsa = Signature.getInstance("SHA1withDSA", "SUN");
+            Signature dsa = Signature.getInstance("SHA1withDSA");
             dsa.initSign(priv);
 
             byte[] nameBuff = name.getBytes();
@@ -134,9 +133,9 @@ public class VoterCli {
     public void generateKeyPairs() throws NoSuchAlgorithmException, FileNotFoundException, IOException, NoSuchProviderException {
         // Generate Keys
         // Key pair code found here: https://docs.oracle.com/javase/tutorial/security/apisign/step2.html
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "SUN");
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 
-        SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+        SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
         keyGen.initialize(1024, random);
 
         KeyPair pair = keyGen.generateKeyPair();
@@ -163,9 +162,19 @@ public class VoterCli {
         return cipher.doFinal(ciphertext.getBytes());
     }
 
-    public byte[] readFileBytes(String filename) throws IOException {
-        Path path = Paths.get(filename);
-        return Files.readAllBytes(path);        
+    public byte[] readFileBytes(String filename) throws IOException, FileNotFoundException {
+        /*Path path = Paths.get(filename);
+        return Files.readAllBytes(path);  */
+
+        File file = new File(filename);
+        FileInputStream fis = new FileInputStream(file);
+        byte[] data = new byte[(int) file.length()];
+        fis.read(data);
+        fis.close();
+
+        String str = new String(data, "UTF-8");
+
+        return data;
     }
 
     public PublicKey readPublicKey(String filename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
