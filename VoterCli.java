@@ -74,11 +74,20 @@ public class VoterCli {
 			// Encrypt name, vNumber, and digital signature using server's public key into one message
             PublicKey serverPubKey = readPublicKey("serverPubKey.der");
 
-            String sMessage = name + ":" + vNumber + ":" + realSig.toString();
-            byte[] message = encrypt(serverPubKey, sMessage);
+
+            byte[] colon = ":".getBytes();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+            outputStream.write(name.getBytes());
+            outputStream.write(colon);
+            outputStream.write(vNumber.getBytes());
+            outputStream.write(colon);
+            outputStream.write(realSig);
+
+            byte[] bMessage = outputStream.toByteArray( );
+            byte[] message = encrypt(serverPubKey, bMessage);
 
             // Send encrypted message
-	        out.println(message.toString());
+	        out.println(message);
 
 	        // Get response from server
 	        serverOutput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -151,17 +160,17 @@ public class VoterCli {
         keyfos.close();
     }
 
-    public byte[] encrypt(PublicKey publicKey, String message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public byte[] encrypt(PublicKey publicKey, byte[] message) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");  
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);  
 
-        return cipher.doFinal(message.getBytes());  
+        return cipher.doFinal(message);  
     }
 
-    public byte[] decrypt(PrivateKey key, String ciphertext) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public byte[] decrypt(PrivateKey key, byte[] ciphertext) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");   
         cipher.init(Cipher.DECRYPT_MODE, key);  
-        return cipher.doFinal(ciphertext.getBytes());
+        return cipher.doFinal(ciphertext);
     }
 
     public byte[] readFileBytes(String filename) throws IOException, FileNotFoundException {
