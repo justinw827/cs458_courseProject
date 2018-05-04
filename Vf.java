@@ -16,7 +16,7 @@ import java.io.*;
 
 public class Vf {
 
-	//initialize socket and input stream
+    //initialize socket and input stream
     private Socket          socket   = null;
     private ServerSocket    server   = null;
 
@@ -79,7 +79,6 @@ public class Vf {
                 File file = new File("password.txt");
                 FileReader fr;
                 BufferedReader brFile; // Buffered reader for file
-
                 // Password file format
                 // <user ID> <hashed password> <date and time when the password is stored>
                 String idCheck = "";
@@ -101,12 +100,9 @@ public class Vf {
                     System.err.println("Error opening file.");
                     e.printStackTrace();
                 }
-
                 // Hash password with MD5
                 String hashtext = hashMD5(password);
-
                 System.out.println(hashtext);
-
                 if (idCheck == username) {
                     if (hashtext == storedPW) {
                         out.println("OK");
@@ -202,15 +198,56 @@ public class Vf {
         cipher.init(Cipher.DECRYPT_MODE, key);  
         return cipher.doFinal(ciphertext.getBytes());
     }
+
+
+    public static PrivateKey insertPriv(String file1) {
+        try {
+           // string priv = "";
+            File filename = new File(file1);
+            byte[] aliceByteArray = new byte[(int) filename.length()];
+            InputStream inputBufferStream = new FileInputStream(filename);
+            KeyFactory keyGen = KeyFactory.getInstance("RSA");
+            inputBufferStream.read(aliceByteArray);
+            inputBufferStream.close();
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(aliceByteArray);
+            PrivateKey returnKey = keyGen.generatePrivate(keySpec);
+            return returnKey;
+        }
+        catch(Exception e1) {
+            System.err.println("Error running MD5.");
+            e1.printStackTrace();
+            return null; 
+        }
+    }
+
+    public static PublicKey insertPub(String file1) {
+        try {
+            //string pub = "";
+            File filename = new File(file1);
+            byte[] aliceByteArray = new byte[(int) filename.length()];
+            InputStream inputBufferStream = new FileInputStream(filename);
+            KeyFactory keyGen = KeyFactory.getInstance("RSA");
+            inputBufferStream.read(aliceByteArray);
+            inputBufferStream.close();
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(aliceByteArray);
+            PublicKey returnKey = keyGen.generatePublic(keySpec);
+            return returnKey;
+        }
+        catch (Exception e2){
+        System.err.println("Error running MD5.");
+            e2.printStackTrace();
+            return null;
+        }
+    }
  
     public static void main(String[] args) {
 
-    	if (args.length != 1 ) {
-			System.err.println("Error: Incorrect number of arguments. Program accepts 1 argumnet.");
-			System.exit(0);
-		}
+        if (args.length != 1 ) {
+            System.err.println("Error: Incorrect number of arguments. Program accepts 1 argumnet.");
+            System.exit(0);
+        }
 
-		int portNum = Integer.parseInt(args[0]);
+        int portNum = Integer.parseInt(args[0]);
 
         Vf server = new Vf(portNum);
     }
